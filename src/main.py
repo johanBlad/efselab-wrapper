@@ -5,6 +5,7 @@ import sys
 
 import lemmatize
 from tagger import SucTagger, SucNETagger, UDTagger
+from stopwords import stopwords
 
 
 DUMMY_STRING = 'Barnen ska gå till skolan, även om regnet faller. Så ska det vara enligt Johan Blad. Men det är på ljug.'
@@ -30,8 +31,8 @@ PROCESS = 'process'
 def main():
     print("-- MAIN --")
     corpus = [DUMMY_STRING, LONG_STRING]
-    processed = run_pipeline(corpus)
-    print("DONE! output:")
+    processed = run_processing_pipeline(corpus)
+    print("-- COMPLETE --")
     print(processed)
 
 
@@ -56,48 +57,56 @@ def get_models():
     models["lemmatizer"].load(LEMMATIZATION_MODEL)
     return models
 
+
 def run_processing_pipeline(data):
     '''
     INPUT: list of string (corpus)\n
-    OUTPUT: list of list of string (annotated and sorted)
+    OUTPUT: list of list of string (documents as lists of of lemmas, filtered on POS and stopwords)
     '''
     
     models = get_models() 
     return [process_document(doc, models) for doc in data]
 
 
-
 def run_annotation_pipeline(data):
     '''
     INPUT: list of string (corpus)\n
-    OUTPUT: list of list of list of tuple (documents as lists of annotated sentences)
+    OUTPUT: list of list of tuple (documents as lists of tokens)
     '''
 
     models = get_models()
     return [annotate_document(doc, models) for doc in data]
 
+def annotate_document(doc, models):
+    doc_sentences = annotate_sentences(doc, models)
+    
+    # Flatten document of sentences of tokens into document of tokens, and keep all tokens
+    return [token for sentence in doc_sentences for token in sentence]
 
-def process_document(document, models):
+def process_document(doc, models):
+    doc_sentences = annotate_sentences(doc, models)
+
+    # Flatten document of sentences of tokens into document of token.lemma, if token should be kept
+    return [clean_word(token[1]) for sentence in doc_sentences for token in sentence if keep_token(token)]
+
+
+def clean_word(word):
+    return word.replace('\xad', '').strip('”').strip('-').replace('-', '_').lower()
+
+
+def keep_token(token):
+    POS = ['PROPN', 'NOUN', 'ADJ']
+    #removed ['VERB', 'ADV', 'SCONJ', 'AUX', 'PUNCT', 'ADP', 'PRON','DET', 'PART', 'CCONJ', 'NUM', 'INTJ']
+    if token[2] in POS and token[1] not in stopwords and len(token[1]) > 1:
+        return True
+    else:
+        return False
+
+
+def annotate_sentences(document, models):
     '''
     INPUT:  string (document)\n
-    OUTPUT: list of string (document as a list of tokens, where each token is a lemma and filtered)
-    '''
-    sentences = run_tokenization(document)
-    processed_tokens = []
-
-    for sentence in sentences:
-        lemmas, ud_tags_list, suc_tags_list, suc_ne_list = run_tagging_and_lemmatization(
-            sentence, models)
-
-        ud_tag_list = [ud_tags[:ud_tags.find("|")] for ud_tags in ud_tags_list]
-        processed_tokens.append([e for e in zip(sentence, lemmas, ud_tag_list, suc_ne_list)])
-
-    return processed_tokens
-
-def annotate_document(document, models):
-    '''
-    INPUT:  string (document)\n
-    OUTPUT: list of list of tuple (document as a list of sentences, where each sentence is a list of tokens)
+    OUTPUT: list of list of tuple (document as a list of sentences of tokens)
     '''
     sentences = run_tokenization(document)
     annotated_sentences = []
@@ -105,8 +114,9 @@ def annotate_document(document, models):
     for sentence in sentences:
         lemmas, ud_tags_list, suc_tags_list, suc_ne_list = run_tagging_and_lemmatization(
             sentence, models)
-
         ud_tag_list = [ud_tags[:ud_tags.find("|")] for ud_tags in ud_tags_list]
+
+        # Token format: (word, lemma, POS, NER-tag)
         annotated_sentences.append([e for e in zip(sentence, lemmas, ud_tag_list, suc_ne_list)])
 
     return annotated_sentences
