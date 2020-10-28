@@ -1,0 +1,14 @@
+__pycache__
+
+setup/build
+setup/*.so
+setup/pysuc_ne.c
+setup/pysuc.c
+setup/pysuc_ne.c
+setup/pyudt_suc_sv.c
+setup/swe-pipeline
+setup/udt_suc_sv
+setup/udt_suc_sv.c
+
+
+*.gz
