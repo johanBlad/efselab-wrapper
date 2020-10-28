@@ -1,4 +1,5 @@
 __pycache__
+*.gz
 
 setup/build
 setup/*.so
@@ -9,6 +10,10 @@ setup/pyudt_suc_sv.c
 setup/swe-pipeline
 setup/udt_suc_sv
 setup/udt_suc_sv.c
+setup/lemmatize.c
 
+input/*
+output/*
 
-*.gz
+src/**.so
+src/bin
