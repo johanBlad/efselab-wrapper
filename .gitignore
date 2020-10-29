@@ -13,6 +13,8 @@ setup/lemmatize.c
 
 input/*
 output/*
+var/*
+debug.py
 
 efselabwrapper/**.so
 efselabwrapper/bin

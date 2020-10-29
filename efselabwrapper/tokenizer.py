@@ -77,6 +77,7 @@ ABBREVS = {
     ('t.ex', '.'): 't.ex.'
 }
 
+
 def build_sentences(data, segment=True, non_capitalized=False):
     data = data.strip()
 
@@ -94,6 +95,7 @@ def build_sentences(data, segment=True, non_capitalized=False):
     sentences = group_sentences(marked)
 
     return sentences
+
 
 class PeekableIterator:
     def __init__(self, iterable):
@@ -127,11 +129,12 @@ class PeekableIterator:
         self._fill_cache(n)
         if len(self._cache) == 0:
             return None
-        if n is None:
+        if n is None or len(self._cache) == 1:
             value = self._cache[0]
         else:
             value = [self._cache[i] for i in range(n)]
         return value
+
 
 smiley_re = re.compile(r"(?:[:;]'?-?[()DS/])|(?:\^_\^)$")
 
@@ -149,6 +152,7 @@ tokenizer_re = re.compile(r"""
     |
     \S                         # single non-space character
     """, re.UNICODE | re.VERBOSE)
+
 
 def tokenize(data):
     for match in tokenizer_re.finditer(data):
@@ -191,7 +195,7 @@ def join_abbrevs(abbrevs, tokens, non_capitalized=False):
                         # Emit the normalized abbrev
                         longest_candidate = candidate
                         break
-                except StopIteration:
+                except (StopIteration, TypeError):
                     # Tried to peek beyond EOF
                     break
             if longest_candidate:
@@ -226,5 +230,3 @@ def group_sentences(tokens, max_len=200):
             sentence.append(token)
     if sentence and len(sentence) <= max_len:
         yield sentence
-
-        

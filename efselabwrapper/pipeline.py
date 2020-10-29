@@ -97,7 +97,7 @@ def annotate_sentences(document, models):
     '''
     sentences = run_tokenization(document)
     annotated_sentences = []
-
+    
     for sentence in sentences:
         lemmas, ud_tags_list, suc_tags_list, suc_ne_list = run_tagging_and_lemmatization(
             sentence, models)
