@@ -8,36 +8,73 @@ from efselabwrapper.config import get_models
 
 MAX_TOKEN = 256
 
-def run_processing_pipeline(data):
-    '''
-    INPUT: list of string (corpus)\n
-    OUTPUT: list of list of string (documents as lists of of lemmas, filtered on POS and stopwords)
-    '''
-    
-    models = get_models() 
-    return [process_document(doc, models) for doc in data]
-
 
 def run_annotation_pipeline(data):
     '''
     INPUT: list of string (corpus)\n
     OUTPUT: list of list of tuple (documents as lists of tokens)
     '''
-
     models = get_models()
     return [annotate_document(doc, models) for doc in data]
 
+
+def run_processing_pipeline(data):
+    '''
+    INPUT: list of string (corpus)\n
+    OUTPUT: list of list of string (documents as lists of of lemmas, filtered on POS and stopwords)
+    '''
+    models = get_models()
+    return [process_document(doc, models) for doc in data]
+
+
+def run_processing_pipeline_ner(data):
+    '''
+    INPUT: list of string (corpus)\n
+    OUTPUT: list of list of string (documents as lists of of lemmas, filtered on POS and stopwords)
+    '''
+    models = get_models()
+
+    processed_corpus = []
+    ner_tags_corpus = []
+
+    for doc in data:
+        processed_doc, ner_tags = process_document_ner(doc, models)
+        processed_corpus.append(processed_doc)
+        ner_tags_corpus.append(ner_tags)
+    return processed_corpus, ner_tags_corpus
+
+
 def annotate_document(doc, models):
     doc_sentences = annotate_sentences(doc, models)
-    
+
     # Flatten document of sentences of tokens into document of tokens, and keep all tokens
     return [token for sentence in doc_sentences for token in sentence]
+
 
 def process_document(doc, models):
     doc_sentences = annotate_sentences(doc, models)
 
     # Flatten document of sentences of tokens into document of token.lemma, if token should be kept
     return [clean_word(token[1]) for sentence in doc_sentences for token in sentence if keep_token(token)]
+
+
+def process_document_ner(doc, models):
+    doc_sentences = annotate_sentences(doc, models)
+
+    # ner_tags: [(doc_index, lemma, ner_tag), ...]
+    ner_tags = []
+    processed_document = []
+    token_index = 0
+
+    for sentence in doc_sentences:
+        for token in sentence:
+            if keep_token(token):
+                clean_lemma = clean_word(token[1])
+                processed_document.append(clean_lemma)
+                if (token[3] != 'O'):
+                    ner_tags.append((token_index, clean_lemma, token[3]))
+            token_index += 1
+    return processed_document, ner_tags
 
 
 def clean_word(word):
@@ -67,7 +104,8 @@ def annotate_sentences(document, models):
         ud_tag_list = [ud_tags[:ud_tags.find("|")] for ud_tags in ud_tags_list]
 
         # Token format: (word, lemma, POS, NER-tag)
-        annotated_sentences.append([e for e in zip(sentence, lemmas, ud_tag_list, suc_ne_list)])
+        annotated_sentences.append(
+            [e for e in zip(sentence, lemmas, ud_tag_list, suc_ne_list)])
 
     return annotated_sentences
 

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from efselabwrapper.pipeline import run_processing_pipeline, run_annotation_pipeline
+from efselabwrapper.pipeline import run_processing_pipeline, run_annotation_pipeline, run_processing_pipeline_ner
 
 def test_pipelines():
     corpus = TEST_CORPUS
@@ -11,6 +11,11 @@ def test_pipelines():
     print('test processing pipeline...')
     processed = run_processing_pipeline(corpus)
     print('len & output: ', len(processed), processed[0][:3], '...\n')
+
+    print('test processing pipeline with NER-tags...')
+    processed_ner, ner_tags = run_processing_pipeline_ner(corpus)
+    print('doc len & output: ', len(processed_ner), processed_ner[0][:3], '...')
+    print('ner len & output: ', len(ner_tags), ner_tags[0][:4], '...\n')
 
     print("test complete!")
 
