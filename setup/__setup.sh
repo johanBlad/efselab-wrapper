@@ -21,5 +21,9 @@ python build_udt_suc_sv.py --python --beam-size 1 --n-train-fields 4
 
 # Copy necessary binaries to bin folder, for usage in the pipeline
 echo 'Copy binaries to src/bin...'
-cp -r swe-pipeline/* ../src/bin/
-cp *.so ../src
+cp swe-pipeline/suc-ne.bin ../efselabwrapper/bin/
+cp swe-pipeline/suc-saldo.lemmas ../efselabwrapper/bin/
+cp swe-pipeline/suc-ud.bin ../efselabwrapper/bin/
+cp swe-pipeline/suc.bin ../efselabwrapper/bin/
+
+cp *.so ../efselabwrapper

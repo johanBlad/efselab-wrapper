@@ -1,5 +1,4 @@
 __pycache__
-*.gz
 
 setup/build
 setup/*.so
@@ -15,5 +14,5 @@ setup/lemmatize.c
 input/*
 output/*
 
-src/**.so
-src/bin
+efselabwrapper/**.so
+efselabwrapper/bin

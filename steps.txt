@@ -1,2 +1,0 @@
-cd into setup/
-run $ bash __setup.sh
