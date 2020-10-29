@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from efselabwrapper.pipeline import run_processing_pipeline, run_annotation_pipeline, run_processing_pipeline_ner
+from efselabwrapper import run_processing_pipeline, run_annotation_pipeline, run_processing_pipeline_ner
 
 def test_pipelines():
     corpus = TEST_CORPUS

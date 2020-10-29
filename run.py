@@ -1,6 +1,6 @@
 import efselabwrapper
 
-from efselabwrapper.pipeline import run_processing_pipeline, run_annotation_pipeline, run_processing_pipeline_ner
+from efselabwrapper import run_processing_pipeline, run_annotation_pipeline, run_processing_pipeline_ner
 
 LONG_STRING = '''
 Till en början stack smittspridningen ut bland 20–29-åringar, för att sedan nå alla åldersgrupper.
