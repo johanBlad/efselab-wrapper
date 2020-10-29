@@ -2,8 +2,6 @@ import efselabwrapper
 
 from efselabwrapper.pipeline import run_processing_pipeline, run_annotation_pipeline
 
-
-DUMMY_STRING = 'Barnen ska gå till skolan, även om regnet faller. Så ska det vara enligt Johan Blad. Men det är på ljug.'
 LONG_STRING = '''
 Till en början stack smittspridningen ut bland 20–29-åringar, för att sedan nå alla åldersgrupper.
 
@@ -14,7 +12,7 @@ De regioner som har högst smittspridning per capita är Uppsala, Örebro, Jämt
 
 def main():
     print("-- MAIN --")
-    corpus = [DUMMY_STRING, LONG_STRING]
+    corpus = [LONG_STRING]
     processed = run_processing_pipeline(corpus)
     print("-- COMPLETE --")
     print(processed)
